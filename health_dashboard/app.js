@@ -5,6 +5,8 @@ const apiBridgeRequests = new Map();
 let apiBridgeFrame = null;
 let apiBridgeReady = false;
 let apiBridgeConfigurationError = "";
+let apiBridgeTargetWindow = null;
+let apiBridgeTargetOrigin = "";
 let apiBridgeRequestId = 0;
 const apiBridgeReadyWaiters = [];
 const state = {
@@ -59,11 +61,19 @@ function initializeApiBridge() {
     "position:fixed;width:1px;height:1px;left:-2px;bottom:-2px;border:0;opacity:0;pointer-events:none;";
 
   window.addEventListener("message", (event) => {
-    if (event.source !== apiBridgeFrame.contentWindow) return;
+    if (!isApiBridgeFrame(event.source)) return;
     const message = event.data;
     if (message?.type === "health-api-bridge-ready") {
+      apiBridgeTargetWindow = event.source;
+      apiBridgeTargetOrigin = event.origin;
       apiBridgeReady = true;
       apiBridgeReadyWaiters.splice(0).forEach((resolve) => resolve());
+      return;
+    }
+    if (
+      event.source !== apiBridgeTargetWindow ||
+      event.origin !== apiBridgeTargetOrigin
+    ) {
       return;
     }
     if (message?.type !== "health-api-response") return;
@@ -79,6 +89,24 @@ function initializeApiBridge() {
   bridgeUrl.searchParams.set("bridge", "1");
   apiBridgeFrame.src = bridgeUrl.toString();
   document.body.appendChild(apiBridgeFrame);
+}
+
+function isApiBridgeFrame(source) {
+  if (!apiBridgeFrame || !source) return false;
+
+  const pendingFrames = [apiBridgeFrame.contentWindow];
+  const visitedFrames = new Set();
+  while (pendingFrames.length) {
+    const frame = pendingFrames.pop();
+    if (frame === source) return true;
+    if (visitedFrames.has(frame)) continue;
+    visitedFrames.add(frame);
+
+    for (let index = 0; index < frame.frames.length; index += 1) {
+      pendingFrames.push(frame.frames[index]);
+    }
+  }
+  return false;
 }
 
 function waitForApiBridge() {
@@ -113,9 +141,9 @@ async function callApiBridge(request) {
       reject(new Error("Google Apps Script belum merespons. Coba lagi nanti."));
     }, 30000);
     apiBridgeRequests.set(id, { resolve, reject, timeout });
-    apiBridgeFrame.contentWindow.postMessage(
+    apiBridgeTargetWindow.postMessage(
       { type: "health-api-request", id, request },
-      "*",
+      apiBridgeTargetOrigin,
     );
   });
 }
