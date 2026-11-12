@@ -26,19 +26,29 @@
     </header>
 
     <section id="access-screen" class="access-screen" aria-labelledby="access-title">
-      <form id="access-form" class="card access-card">
-        <p class="eyebrow">RUANG PRIBADI</p>
-        <h1 id="access-title">Masuk ke catatan kesehatan</h1>
-        <p class="muted">Masukkan kunci akses yang disiapkan admin. Ingat kunci hanya di perangkat pribadi yang tepercaya.</p>
-        <label for="access-token">Kunci akses</label>
-        <input id="access-token" name="token" type="password" autocomplete="current-password" required>
+      <div class="card access-card">
+        <p class="eyebrow">LOGIN WHATSAPP</p>
+        <h1 id="access-title">Masuk dengan WhatsApp</h1>
+        <p class="muted">Gunakan nomor WhatsApp yang sudah didaftarkan admin di daftar pengguna.</p>
+        <ol class="wa-login-steps">
+          <li>Buka chat pribadi dengan bot WhatsApp.</li>
+          <li>Kirim pesan <code>LOGIN</code> atau <code>MASUK</code>.</li>
+          <li>Buka tautan login yang dibalas bot. Tautan berlaku 10 menit dan hanya bisa dipakai sekali.</li>
+        </ol>
         <label class="checkbox-label" for="remember-access">
           <input id="remember-access" name="remember" type="checkbox">
-          Ingat saya di perangkat ini
+          Ingat saya di perangkat ini (30 hari)
         </label>
-        <button class="button button-primary button-full" type="submit">Buka catatan</button>
         <p id="access-error" class="form-error" role="alert"></p>
-      </form>
+        <details class="manual-login">
+          <summary>Login dengan kunci akses admin</summary>
+          <form id="access-form">
+            <label for="access-token">Kunci akses</label>
+            <input id="access-token" name="token" type="password" autocomplete="current-password" required>
+            <button class="button button-primary button-full" type="submit">Buka catatan</button>
+          </form>
+        </details>
+      </div>
     </section>
 
     <main id="app-screen" class="app-shell" hidden>
