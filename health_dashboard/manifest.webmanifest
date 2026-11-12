@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Ruang Sehat",
+  "short_name": "Ruang Sehat",
+  "description": "Catatan jadwal pemeriksaan, nutrisi, dan kesehatan ibu.",
+  "lang": "id",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f8f6",
+  "theme_color": "#14645a",
+  "icons": [
+    {
+      "src": "./icons/health.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
