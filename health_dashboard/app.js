@@ -106,7 +106,8 @@ function isApiBridgeFrame(source, origin) {
     senderOrigin.protocol === "https:" &&
     (hostname === "script.google.com" ||
       hostname === "script.googleusercontent.com" ||
-      hostname.endsWith(".script.googleusercontent.com"))
+      hostname.endsWith(".script.googleusercontent.com") ||
+      hostname.endsWith("-script.googleusercontent.com"))
   );
 }
 
