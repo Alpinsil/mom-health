@@ -61,7 +61,7 @@ function initializeApiBridge() {
     "position:fixed;width:1px;height:1px;left:-2px;bottom:-2px;border:0;opacity:0;pointer-events:none;";
 
   window.addEventListener("message", (event) => {
-    if (!isApiBridgeFrame(event.source)) return;
+    if (!isApiBridgeFrame(event.source, event.origin)) return;
     const message = event.data;
     if (message?.type === "health-api-bridge-ready") {
       apiBridgeTargetWindow = event.source;
@@ -91,22 +91,23 @@ function initializeApiBridge() {
   document.body.appendChild(apiBridgeFrame);
 }
 
-function isApiBridgeFrame(source) {
+function isApiBridgeFrame(source, origin) {
   if (!apiBridgeFrame || !source) return false;
+  if (source === apiBridgeFrame.contentWindow) return true;
 
-  const pendingFrames = [apiBridgeFrame.contentWindow];
-  const visitedFrames = new Set();
-  while (pendingFrames.length) {
-    const frame = pendingFrames.pop();
-    if (frame === source) return true;
-    if (visitedFrames.has(frame)) continue;
-    visitedFrames.add(frame);
-
-    for (let index = 0; index < frame.frames.length; index += 1) {
-      pendingFrames.push(frame.frames[index]);
-    }
+  let senderOrigin;
+  try {
+    senderOrigin = new URL(origin);
+  } catch {
+    return false;
   }
-  return false;
+  const hostname = senderOrigin.hostname.toLowerCase();
+  return (
+    senderOrigin.protocol === "https:" &&
+    (hostname === "script.google.com" ||
+      hostname === "script.googleusercontent.com" ||
+      hostname.endsWith(".script.googleusercontent.com"))
+  );
 }
 
 function waitForApiBridge() {
@@ -380,24 +381,20 @@ function renderReminderStatus() {
   const reminder = state.dashboard.reminder || {};
   const statusElement = document.querySelector("#reminder-status");
   const detailElement = document.querySelector("#reminder-detail");
-  const timezoneMismatch =
-    reminder.scriptTimeZone &&
-    reminder.spreadsheetTimeZone &&
-    reminder.scriptTimeZone !== reminder.spreadsheetTimeZone;
 
   let message;
   let warning = false;
-  if (!reminder.triggerInstalled) {
+  if (reminder.deliveryMode === "bot") {
+    warning = true;
+    message = `Reminder H-1 dan hari-H dikirim langsung oleh bot WhatsApp setelah pukul ${String(reminder.sendHour).padStart(2, "0")}.00 (${reminder.timeZone || "Asia/Jakarta"}). Bot harus tetap online; konfigurasi gateway Apps Script tidak diperlukan.`;
+  } else if (!reminder.triggerInstalled) {
     warning = true;
     message =
-      "Reminder H-1 belum aktif. Jalankan setupHealthSheets di Apps Script untuk menyiapkan sheet dan trigger.";
+      "Reminder H-1 belum aktif. Jalankan setupHealthSheets di Apps Script untuk menyiapkan sheet.";
   } else if (!reminder.gatewayConfigured) {
     warning = true;
     message =
       "Trigger reminder terpasang, tetapi konfigurasi gateway WhatsApp belum lengkap.";
-  } else if (timezoneMismatch) {
-    warning = true;
-    message = `Zona waktu script (${reminder.scriptTimeZone}) berbeda dari spreadsheet (${reminder.spreadsheetTimeZone}). Samakan zona waktu agar reminder sekitar pukul 07.00 sesuai.`;
   } else {
     message = `Reminder aktif: jadwal Pending untuk besok diperiksa setiap hari sekitar pukul ${String(reminder.sendHour).padStart(2, "0")}.00 (${reminder.scriptTimeZone}) dan dikirim ke nomor WhatsApp yang dikonfigurasi.`;
   }
