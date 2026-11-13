@@ -204,29 +204,48 @@ function bindNavigation() {
 function bindForms() {
   document.querySelector("#access-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const tokenInput = document.querySelector("#access-token");
+    const phoneInput = document.querySelector("#access-phone");
+    const passwordInput = document.querySelector("#access-password");
     const errorElement = document.querySelector("#access-error");
     const submitButton = document.querySelector("#access-submit");
     const submitLabel = document.querySelector("#access-submit-label");
     if (submitButton.disabled) return;
 
     errorElement.textContent = "";
-    state.accessToken = tokenInput.value.trim();
     submitButton.disabled = true;
     submitButton.classList.add("is-loading");
     submitButton.setAttribute("aria-busy", "true");
     submitLabel.textContent = "Memeriksa akses...";
     try {
+      const { ok, result } = await sendApiRequest(
+        "loginWithPassword",
+        {
+          phone: phoneInput.value.trim(),
+          password: passwordInput.value,
+          remember: document.querySelector("#remember-access").checked,
+        },
+        "",
+      );
+      if (!ok || result?.status !== "success" || !result.data?.sessionToken) {
+        throw new Error(
+          result?.error ||
+            result?.replyMessage ||
+            "Nomor WhatsApp atau password tidak valid.",
+        );
+      }
+
+      state.accessToken = result.data.sessionToken;
       await openDashboard();
-      tokenInput.value = "";
+      passwordInput.value = "";
     } catch (error) {
       state.accessToken = "";
       errorElement.textContent = error.message;
     } finally {
+      passwordInput.value = "";
       submitButton.disabled = false;
       submitButton.classList.remove("is-loading");
       submitButton.setAttribute("aria-busy", "false");
-      submitLabel.textContent = "Buka catatan";
+      submitLabel.textContent = "Masuk";
     }
   });
 

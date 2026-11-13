@@ -9,7 +9,7 @@
     <title>Ruang Sehat</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./icons/health.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./styles.css?v=8">
+    <link rel="stylesheet" href="./styles.css?v=9">
   </head>
   <body>
     <header class="site-header">
@@ -28,8 +28,8 @@
     <section id="access-screen" class="access-screen" aria-labelledby="access-title">
       <div class="card access-card">
         <p class="eyebrow">LOGIN WHATSAPP</p>
-        <h1 id="access-title">Masuk dengan WhatsApp</h1>
-        <p class="muted">Gunakan nomor WhatsApp yang sudah didaftarkan admin di daftar pengguna.</p>
+        <h1 id="access-title">Masuk ke Ruang Sehat</h1>
+        <p class="muted">Gunakan tautan sekali pakai dari bot WhatsApp atau masuk dengan nomor dan password pada daftar pengguna.</p>
         <ol class="wa-login-steps">
           <li>Buka chat pribadi dengan bot WhatsApp.</li>
           <li>Kirim pesan <code>LOGIN</code> atau <code>MASUK</code>.</li>
@@ -40,17 +40,16 @@
           Ingat saya di perangkat ini (30 hari)
         </label>
         <p id="access-error" class="form-error" role="alert"></p>
-        <details class="manual-login">
-          <summary>Login dengan kunci akses admin</summary>
-          <form id="access-form">
-            <label for="access-token">Kunci akses</label>
-            <input id="access-token" name="token" type="password" autocomplete="current-password" required>
-            <button id="access-submit" class="button button-primary button-full" type="submit" aria-busy="false">
-              <span class="loading-spinner" aria-hidden="true"></span>
-              <span id="access-submit-label">Buka catatan</span>
-            </button>
-          </form>
-        </details>
+        <form id="access-form">
+          <label for="access-phone">Nomor WhatsApp</label>
+          <input id="access-phone" name="phone" type="tel" inputmode="tel" autocomplete="username" required>
+          <label for="access-password">Password</label>
+          <input id="access-password" name="password" type="password" autocomplete="current-password" required>
+          <button id="access-submit" class="button button-primary button-full" type="submit" aria-busy="false">
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <span id="access-submit-label">Masuk</span>
+          </button>
+        </form>
       </div>
     </section>
 
@@ -295,7 +294,7 @@
       <p>Informasi kesehatan perlu dijaga kerahasiaannya. Gunakan hanya pada perangkat dan jaringan tepercaya.</p>
     </footer>
 
-    <script src="./config.js?v=8" defer></script>
-    <script src="./app.js?v=8" defer></script>
+    <script src="./config.js?v=9" defer></script>
+    <script src="./app.js?v=9" defer></script>
   </body>
 </html>
