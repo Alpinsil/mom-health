@@ -45,7 +45,10 @@
           <form id="access-form">
             <label for="access-token">Kunci akses</label>
             <input id="access-token" name="token" type="password" autocomplete="current-password" required>
-            <button class="button button-primary button-full" type="submit">Buka catatan</button>
+            <button id="access-submit" class="button button-primary button-full" type="submit" aria-busy="false">
+              <span class="loading-spinner" aria-hidden="true"></span>
+              <span id="access-submit-label">Buka catatan</span>
+            </button>
           </form>
         </details>
       </div>

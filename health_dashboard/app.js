@@ -206,14 +206,27 @@ function bindForms() {
     event.preventDefault();
     const tokenInput = document.querySelector("#access-token");
     const errorElement = document.querySelector("#access-error");
+    const submitButton = document.querySelector("#access-submit");
+    const submitLabel = document.querySelector("#access-submit-label");
+    if (submitButton.disabled) return;
+
     errorElement.textContent = "";
     state.accessToken = tokenInput.value.trim();
+    submitButton.disabled = true;
+    submitButton.classList.add("is-loading");
+    submitButton.setAttribute("aria-busy", "true");
+    submitLabel.textContent = "Memeriksa akses...";
     try {
       await openDashboard();
       tokenInput.value = "";
     } catch (error) {
       state.accessToken = "";
       errorElement.textContent = error.message;
+    } finally {
+      submitButton.disabled = false;
+      submitButton.classList.remove("is-loading");
+      submitButton.setAttribute("aria-busy", "false");
+      submitLabel.textContent = "Buka catatan";
     }
   });
 
