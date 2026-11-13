@@ -1,10 +1,10 @@
-const CACHE_NAME = "ruang-sehat-shell-v7";
+const CACHE_NAME = "ruang-sehat-shell-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./config.js",
-  "./app.js",
+  "./styles.css?v=8",
+  "./config.js?v=8",
+  "./app.js?v=8",
   "./manifest.webmanifest",
   "./icons/health.svg",
 ];
